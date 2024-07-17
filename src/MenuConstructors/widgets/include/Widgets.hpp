@@ -5,3 +5,4 @@
 #include "ExpanderWidget.hpp"
 #include "SpinnerWidget.hpp"
 #include "DropdownWidget.hpp"
+#include "SliderWidget.hpp"
