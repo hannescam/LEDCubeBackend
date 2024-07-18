@@ -24,13 +24,13 @@ class SocketHandler {
     unsigned long getConnectionId();
     bool sendString(string data);
     bool sendByteArray(const char* data, int size);
-    string receiveStringUntilMessageEnd();
     char* receiveByteArry(int size);
     void setDisconnectHandler(function<void(SocketHandler*)> _disconnectHandler);
     void setReceiveHandler(function<void(string, SocketHandler*)> _receiveHandler);
     void setUseReveiveHandler(bool useHandler);
     void setPacketSize(int _packetSize);
     void setConnectionFileDescriptor(int _connfd);
+    void triggerKeepalive();
   private:
     int connfd;
     int packetSize;
@@ -41,6 +41,7 @@ class SocketHandler {
     thread stopHandlerThread;
     chrono::time_point<chrono::high_resolution_clock> lastKeepaliveRequest;
 
+    string receiveStringUntilMessageEnd();
     void stopHandler();
     string keepaliveHandler(string input);
     void listener();

@@ -42,13 +42,13 @@ char* SocketHandler::receiveByteArry(int size) {
   return buffer; // NO I WON'T DOCUMENT THIS
 }
 
-// Function to receive a entire message/the entire buffer (blocking)
+// INTERNAL: function to receive a entire message/the entire buffer (blocking)
 
 string SocketHandler::receiveStringUntilMessageEnd() {
   string finalBuffer;
   string bufferStr;
   char* buffer = new char[packetSize]; // Not important to document
-  while (isConnOpen) { // Only loop when the socket is open
+  while (isConnOpen && useHandler) { // Only loop when the socket is open and the handler is used
     bzero(buffer, packetSize); // Clear the buffer
     int readBytes = recv(connfd, buffer, packetSize, MSG_DONTWAIT | MSG_WAITALL); // Read from the socket and not be blocking (so it doesn't try to fill the buffer when reading from the socket)
     if (((readBytes == 0) | (readBytes == -1)) && finalBuffer.size() > 0) break; // Check if there is something in the read buffer (and there wasn't a receive error) and there is something to return
@@ -91,6 +91,12 @@ void SocketHandler::startListner() {
   stopHandlerThread = move(_stopHandlerThread); // Move the thread to a 'permanent' home
 
   connectionId = time(0); // Get the system time as an id for the connection/client
+}
+
+// Reset the keep-alive timer
+
+void SocketHandler::triggerKeepalive() {
+  lastKeepaliveRequest = chrono::high_resolution_clock::now(); // Reset timer
 }
 
 // INTERNAL: function for distinguishing keep-alive requests and normal messages
