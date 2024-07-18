@@ -10,6 +10,7 @@ propertyWidget property;
     expanderWidget expander;
     spinnerWidget spinner;
     dropdownWidget dropdown;
+    sliderWidget slider;
     groupConstructor group;
     menuConstructor menu;
 using namespace std;
@@ -117,7 +118,7 @@ void dings(string messageId, string file, string path, string value, SocketHandl
 }
 
 
-int test_some_stuff_smileyface() {//test_widget_constructor();
+int test_some_stuff_smileyface() {test_widget_constructor();
 
 
 
@@ -169,16 +170,30 @@ int test_some_stuff_smileyface() {//test_widget_constructor();
         cout << "Dropdown value changed: " << value << endl;
       });
 
+      slider.setLabel("What is the difference between 2 and 2*2 ?????");
+      slider.setTooltip("What is this Hashmap<Hashmap<Hashmap<UUID, String>, String>, String>?");
+      slider.setStyle("osd,background,destructive-action");
+      slider.setMin(-500.0);
+      slider.setValue(0.5);
+      slider.setDigits(1);
+      slider.setIsNumeric(true);
+      slider.setIsSnap(true);
+      slider.setIsWraparound(false);
+      slider.setStep(0.1);
+      slider.setClimbRate(4);
+      slider.setMax(500.0);
+      slider.setChangeHandler([](double value){
+        cout << "Slider value changed: " << value << endl;
+      });
+
       group.setLabel("What are you?");
       group.setTooltip("That is a 'question'");
       group.addWidget(&expander, 0);
       group.addWidget(&spinner, 1);
       group.addWidget(&dropdown, 2);
+      group.addWidget(&slider, 3);
 
       menu.addGroup(&group, 0);
-
-
-
 
 
   if (!comms.begin(1200)) return -1;
@@ -246,6 +261,7 @@ void test_widget_constructor() {
   expanderWidget expander;
   spinnerWidget spinner;
   dropdownWidget dropdown;
+  sliderWidget slider;
   groupConstructor group;
   menuConstructor menu;
 
@@ -291,11 +307,25 @@ void test_widget_constructor() {
   dropdown.addEntry("Meow", 1);
   dropdown.addEntry("Aaaaaaaaaaaa...", 2);
 
+  slider.setLabel("What is the difference between 2 and 2*2 ?????");
+  slider.setTooltip("What is this Hashmap<Hashmap<Hashmap<UUID, String>, String>, String>?");
+  slider.setStyle("osd,background,destructive-action");
+  slider.setMin(-500.0);
+  slider.setValue(0.5);
+  slider.setDigits(1);
+  slider.setIsNumeric(true);
+  slider.setIsSnap(true);
+  slider.setIsWraparound(false);
+  slider.setStep(0.1);
+  slider.setClimbRate(4);
+  slider.setMax(500.0);
+
   group.setLabel("What are you?");
   group.setTooltip("That is a 'question'");
   group.addWidget(&expander, 0);
   group.addWidget(&spinner, 1);
   group.addWidget(&dropdown, 2);
+  group.addWidget(&slider, 3);
 
   menu.setTooltip("In here are all the dining options...");
   menu.addGroup(&group, 0);
