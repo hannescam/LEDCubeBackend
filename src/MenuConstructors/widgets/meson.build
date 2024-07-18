@@ -5,7 +5,8 @@ widget_src = [
 	'TextboxWidget.cpp',
 	'ExpanderWidget.cpp',
 	'SpinnerWidget.cpp',
-	'DropdownWidget.cpp'
+	'DropdownWidget.cpp',
+	'SliderWidget.cpp'
 ]
 
 widget_inc_dir = [
