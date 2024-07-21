@@ -3,6 +3,7 @@
 #include <MenuConstructor.hpp>
 #include <GroupConstructor.hpp>
 #include <SocketComms.hpp>
+#include <Logger.hpp>
 propertyWidget property;
     buttonWidget button;
     switchWidget switch_wid;
@@ -227,14 +228,20 @@ void clientHandler(SocketHandler* socket) {
   while (socket->isOpen()) usleep(1000);
   cout << "shit" << endl;
 }
-
+Logger logger;
 int main() {
-  return test_some_stuff_smileyface();
-  /*if (!acceptor.begin(1200)) return 1;
-  acceptor.setClientHandler(clientHandler);
-  acceptor.startListening();
-  while (true) usleep(1000000000);
-  acceptor.closeSocket();*/
+  //return test_some_stuff_smileyface();
+
+  logger.begin("/home/hannes/LoggerConfig.yml");
+  int cnt = 0;
+  while (cnt < logger.getLogLevel() + 1) {
+    logger.log("Hellorld! cnt=" + to_string(cnt), "MAIN", cnt);
+    cnt++;
+  }
+
+  logger.info("test");
+  logger.debug("test", "SILENCE");
+  return 0;
 }
 
 
