@@ -4,9 +4,11 @@
 #include <functional>
 #include <stdlib.h>
 #include <string.h>
+#include <cxxabi.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fstream>
 #include <string>
 #include <iostream>
 #include <yaml-cpp/yaml.h>
@@ -24,7 +26,8 @@ class SocketHandler {
     unsigned long getConnectionId();
     bool sendString(string data);
     bool sendByteArray(const char* data, int size);
-    char* receiveByteArry(int size);
+    char* receiveByteArry(int& size, bool nonblocking);
+    bool receiveFile(string filename, unsigned int fileSize);
     void setDisconnectHandler(function<void(SocketHandler*)> _disconnectHandler);
     void setReceiveHandler(function<void(string, SocketHandler*)> _receiveHandler);
     void setUseReveiveHandler(bool useHandler);

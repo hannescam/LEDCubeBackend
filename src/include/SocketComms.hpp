@@ -88,6 +88,8 @@ class SocketComms {
     thread listener;
     SocketAcceptor acceptor;
     bool fileIsUpcomming = false;
+    unsigned int bytesInFileTransmission;
+    string fileNameInTransmision;
 
     function<void(string, SocketHandler*)> statusRequestHandler;
     function<void(string, requestType, string, SocketHandler*)> generalRequestHandler;

@@ -48,8 +48,10 @@ void SocketComms::handleIncommingYAML(string message, SocketHandler* socket) {
     } else if (requestTypeName == REQUEST_TYPE_MENU_CHANGE) {
       type = REQUEST_MENU_CHANGE;
     } else if (requestTypeName == REQUEST_TYPE_FILE_UPLOAD) {
-      fileIsUpcomming = true;
+      bytesInFileTransmission = messageYAML[REQUEST_FILE_BYTE_COUNT].as<unsigned int>();
+      fileNameInTransmision = messageYAML[REQUEST_FILE].as<string>();
       socket->setUseReveiveHandler(false);
+      fileIsUpcomming = true;
       return;
     } else {
       cerr << "Request type is invalid, sending a error message..." << endl;
@@ -86,13 +88,20 @@ bool SocketComms::begin(int port) {
       try {
         this->handleIncommingYAML(message, socket);
       } catch (exception &error) {
-        cerr << "Stantard error while parsing incoming YAML: " << error.what() << endl;
+        cerr << "Standard error while parsing incoming YAML: " << error.what() << endl;
       } catch (...) {
         cerr << "Unknown error while parsing incoming YAML: " << __cxxabiv1::__cxa_current_exception_type()->name() << endl;
       }
     });
 
-    while (socket->isOpen()) usleep(10000);
+    while (socket->isOpen()) {
+      if (this->fileIsUpcomming) {
+        socket->receiveFile(this->fileNameInTransmision, this->bytesInFileTransmission);
+        this->fileIsUpcomming = false;
+      }
+
+      usleep(1000);
+    }
   });
 
   acceptor.startListening();
