@@ -3,7 +3,8 @@ ledcubebackend_sources = [
   'SocketComms.cpp',
   'YAMLConvertors.cpp',
   'SocketWrapper.cpp',
-  'SocketHandler.cpp'
+  'SocketHandler.cpp',
+  'Logger.cpp'
 ]
 
 ledcubebackend_deps = [
