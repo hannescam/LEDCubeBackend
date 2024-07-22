@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <cstdint>
 #include <unistd.h>
+#include <map>
 #include <vector>
 #include <functional>
 #include <iostream>
@@ -12,10 +13,10 @@
 #include <yaml-cpp/node/emit.h>
 #include <yaml-cpp/yaml.h>
 #include <SocketWrapper.hpp>
+#include <MenuConstructor.hpp>
 #include "communicationDefinitions.hpp"
 
 using namespace std;
-using namespace std::chrono;
 
 enum errorSource {
   SOURCE_POWER,
@@ -42,10 +43,9 @@ enum errorSeverity {
 
 enum fileState {
   STATE_PLAYING,
-  STATE_PAUSED
+  STATE_PAUSED,
+  STATE_NOT_LOADED
 };
-
-
 
 class errorMsg {
   public:
@@ -57,32 +57,25 @@ class errorMsg {
     string getYAMLString();
 };
 
-class animationWithIcon {
+class animation {
   public:
-    string animationName;
-    string animationGnomeIconName;
-};
-
-class replyStatusMsg {
-  public:
-    string messageId;
-    bool fileIsLoaded = false;
-    fileState state;
-    string fileSelected;
-    float currentDraw;
-    float voltage;
-    bool lidState = false;
-    vector<animationWithIcon> availableAnimations;
-    string getYAMLString();
+    menuConstructor* menuEntry;
+    string icon;
 };
 
 class SocketComms {
   public:
     bool begin(int port = 1200);
-    void setStatusRequestHandler(function<void(string, SocketHandler*)> _statusHandler);
-    void setGeneralRequestHandler(function<void(string, requestType, string, SocketHandler*)> _generalRequestHandler);
-    void setMenuChangeHandler(function<void(string, string, string, string, SocketHandler*)> _menuChangeHandler);
+    void addAnimationEntry(string name, string icon, menuConstructor* menuEntry);
+    void setSelectedFile(fileState state, string _selectedFile = "");
+    void setLidState(bool _lidState);
+    void updateVoltage(double _cubeVoltage);
+    void updateCurrentDraw(double _cubeCurrent);
+
     void setNewFileHandler(function<void(string, string, SocketHandler*)> _newFileHandler);
+    void setPlayHandler(function<void(string, string, SocketHandler*)> _playHandler);
+    void setPauseHandler(function<void(string, string, SocketHandler*)> _pauseHandler);
+    void setStopHandler(function<void(string, string, SocketHandler*)> _stopHandler);
   private:
     int bufferSize = 64;
     thread listener;
@@ -91,11 +84,18 @@ class SocketComms {
     unsigned int bytesInFileTransmission;
     string fileNameInTransmision;
 
-    function<void(string, SocketHandler*)> statusRequestHandler;
-    function<void(string, requestType, string, SocketHandler*)> generalRequestHandler;
-    function<void(string, string, string, string, SocketHandler*)> menuChangeHandler;
     function<void(string, string, SocketHandler*)> newFileHandler;
+    function<void(string, string, SocketHandler*)> playHandler;
+    function<void(string, string, SocketHandler*)> pauseHandler;
+    function<void(string, string, SocketHandler*)> stopHandler;
 
+    map<string, animation> animations;
+    bool lidState = true;
+    bool fileIsLoaded = false;
+    bool fileIsPlaying = false;
+    double cubeVoltage = 0;
+    double cubeCurrent = 0;
+    string selectedFile;
     errorMsg createInvalidRequestError(string messageId);
     void handleIncommingYAML(string message, SocketHandler* socket); // So that this function can be passed into set_message_handler
 };

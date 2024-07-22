@@ -32,7 +32,7 @@ string errorMsg::getYAMLString() {
   return YAML::Dump(errorMsgYAML); // Convert the YAML node to a string using the Dump function and return it as the output of the function
 }
 
-string replyStatusMsg::getYAMLString() {
+/*string replyStatusMsg::getYAMLString() {
   YAML::Node replyStatusMsgYAML; // Initialize the YAML node
   replyStatusMsgYAML[INTERNAL_NETWOTK_ID_NAME] = messageId; // Save the required constants/variables into the YAML node
   replyStatusMsgYAML[PACKET_TYPE_NAME] = PACKET_REPLY_NAME;
@@ -64,4 +64,4 @@ string replyStatusMsg::getYAMLString() {
   }
 
   return YAML::Dump(replyStatusMsgYAML); // Convert the YAML node to a string using the Dump function and return it as the output of the function
-}
+}*/
