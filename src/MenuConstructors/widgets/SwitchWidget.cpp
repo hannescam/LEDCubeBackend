@@ -30,9 +30,10 @@ bool switchWidget::addIncomingValue(string InputValue, string) {
   } else if (InputValue == "false") {
     value = false;
   } else {
-    cerr << "String doesn't contain 'true' or 'false' when trying to parse it as bool" << endl;
+    Logger::urgent("Switch inputValue doesn't contain 'true' or 'false' when trying to parse it as bool", LOG_AEREA_WIDGETS);
     return false;
   }
+  Logger::debug("Switch position updated: " + to_string(value), LOG_AEREA_WIDGETS);
   if (switchHandler) switchHandler(value);
   return true;
 }

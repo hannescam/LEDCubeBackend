@@ -27,13 +27,14 @@ bool menuConstructor::path2Position(string& path, unsigned long& position) {
 
 bool menuConstructor::addIncomingValue(string value, string path) {
   unsigned long position;
-  string newPath;
+  string oldPath = path;
   bool success = path2Position(path, position);
 
   if (position < groupConstructors.size() && success) {
+    Logger::debug("Got value and path for a group: value: " + value + ", path: " + oldPath, LOG_AEREA_WIDGET_MENU_CONSTRUCTOR);
     return groupConstructors.at(position)->addIncomingValue(value, path);
   }
-
+  Logger::urgent("Invalid path given: " + oldPath, LOG_AEREA_WIDGET_MENU_CONSTRUCTOR);
   return false;
 }
 

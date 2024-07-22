@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <netdb.h>
+#include <Logger.hpp>
 #include <netinet/in.h>
 #include <functional>
 #include <stdlib.h>

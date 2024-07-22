@@ -57,7 +57,7 @@ bool SocketHandler::receiveFile(string filename, unsigned int fileSize) {
     int cnt;
     char* buffer = new char[packetSize];
     unsigned int bytesReceived = 0;
-    cout << "Receiving file..." << endl;
+    Logger::info("Receiving file: " + filename, LOG_AEREA_SOCKET_HANDLER);
     while (fileSize > bytesReceived) {
       bzero(buffer, packetSize); // Overwrite the content of that array with zeros
       actualSize = recv(connfd, buffer, packetSize, MSG_WAITALL);
@@ -75,10 +75,10 @@ bool SocketHandler::receiveFile(string filename, unsigned int fileSize) {
     outputFile.close();
     return true;
   } catch (exception &error) {
-    cerr << "Standard error while trying to receive file: " << error.what() << endl;
+    Logger::warn("Standard error while trying to receive file: " + string(error.what()), LOG_AEREA_SOCKET_HANDLER);
     return false;
   } catch (...) {
-    cerr << "Unknown error while trying to receive file: " << __cxxabiv1::__cxa_current_exception_type()->name() << endl;
+    Logger::warn("Unknown error while trying to receive file: " + string(__cxxabiv1::__cxa_current_exception_type()->name()), LOG_AEREA_SOCKET_HANDLER);
     return false;
   }
 }
@@ -180,7 +180,7 @@ void SocketHandler::stopHandler() {
     unsigned long timeElapsedSinceConnectionStart = (chrono::duration_cast<chrono::milliseconds>(currentTime - intialConnectionTime)).count(); // Calculate how much time has elapsed since the grace period has started (grace period starts when initializing the stopHandler() thread)
 
     if (timeElapsedSinceLastKeepalive > KEEPALIVE_TIMEOUT && timeElapsedSinceConnectionStart > KEEPALIVE_GRACE_TIME_AFTER_START && isConnOpen) { // Checks if it should terminate the connection because the timeout is over
-      cout << "Client went unresponsive, assuming client disconnected" << endl; // DEBUG
+      Logger::urgent("Client went unresponsive, assuming client disconnected", LOG_AEREA_SOCKET_HANDLER);
       isConnOpen = false; // Report to all threads that the client disconnected
       if (listenerThread.joinable()) listenerThread.join(); // Join the listener to wait until it has closed
       close(connfd); // Close the sockets

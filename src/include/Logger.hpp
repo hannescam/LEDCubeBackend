@@ -1,6 +1,7 @@
 #ifndef LOGGER_INCLUDED
 #define LOGGER_INCLUDED
 
+#include "LogAereas.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -13,10 +14,11 @@
 using namespace std;
 using std::experimental::source_location;
 
-
+#define LOGGER_NEWLINE_CHAR '\n'
 #define LOGGER_SYSTEM_FOLDER_DELIMETOR '/'
 
 #define LOGGER_ALLOW_ALL_LOG_AEREAS_AEREA "ALL"
+#define LOGGER_USE_LIGHT_MODE_COLORS_KEY_NAME "uselightmodecolors"
 #define LOGGER_LOG_LEVEL_KEY_NAME "loglevel"
 #define LOGGER_USE_LINE_NUMBERS_KEY_NAME "uselinenumbers"
 #define LOGGER_LOG_AEREAS_KEY_NAME "logaereas"
@@ -30,11 +32,10 @@ using std::experimental::source_location;
 #define LOG_ERROR_COLOR 0xFF000000
 #define LOG_WARNING_COLOR 0xFF5F0000
 #define LOG_URGENT_COLOR 0xFF00F400
-#define LOG_INFO_COLOR 0xFFFFFF00
+#define LOG_INFO_LIGHTMODE_COLOR 0x00000000
+#define LOG_INFO_DARKMODE_COLOR 0xFFFFFF00
 #define LOG_DEBUG_COLOR 0x0099FF00
 #define LOG_UNKNOWN_COLOR 0x00FF0000
-
-#define LOG_ORIGIN_UNDEFINED "UNDEFINED"
 
 #define MAX_LOG_LEVEL LOG_LEVEL_DEBUG
 
@@ -44,9 +45,11 @@ class LoggerSettings {
     int getLogLevel();
     bool getUseLineNumbers();
     bool getAllAereasAreEnabled();
+    bool getUseLightmodeColors();
     bool checkIfOriginIsEnabled(string origin);
   private:
     vector<string> enabledOrigins;
+    bool useLightmodeColors;
     bool useLineNumbers;
     int logLevel;
 };
