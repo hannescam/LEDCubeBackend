@@ -21,34 +21,6 @@ fileState state = STATE_PAUSED;
 float do_stuff_for_real_because_why_not_smileyface();
 string file_loaded = "df";
 
-void statusHandler(string message_id, SocketHandler* socket) {
-  Logger::debug("Got status request with network id: '" + message_id + "', assembling a status reply...", LOG_AEREA_MAIN);
-  replyStatusMsg status;
-  status.messageId = message_id;
-  status.fileIsLoaded = (file_loaded != "");
-  status.state = state;
-  status.fileSelected = file_loaded;
-  status.currentDraw = 9.11;
-  status.voltage = do_stuff_for_real_because_why_not_smileyface();
-  status.lidState = false;
-  vector<animationWithIcon> anims;
-
-  anims.resize(2);
-  anims.at(0).animationName = "foo test";
-  anims.at(0).animationGnomeIconName = "org.fedoraproject.AnacondaInstaller-symbolic";
-  anims.at(1).animationName = "df";
-  anims.at(1).animationGnomeIconName = "battery-level-0-charging-symbolic";
-
-  status.availableAnimations = anims;
-  Logger::debug("Assembled status reply:", LOG_AEREA_MAIN);
-  Logger::debug(status.getYAMLString(), LOG_AEREA_MAIN);
-  if (!socket->sendString(status.getYAMLString())) {
-    Logger::warn("Could not send status reply", LOG_AEREA_MAIN);
-    return;
-  }
-  Logger::debug("Successfully send status reply", LOG_AEREA_MAIN);
-}
-
 float val1 = 5.1;
 float val2 = 5.2;
 float val3 = 5.3;
@@ -79,45 +51,19 @@ float do_stuff_for_real_because_why_not_smileyface() {
   return -1;
 }
 
-void generalRequestHandler(string message_id, requestType type, string filename, SocketHandler* socket) {
-  Logger::debug("Triggered general request handler with the message id: '" + message_id, LOG_AEREA_MAIN);
-  if (type == REQUEST_MENU) {
-    Logger::debug("Menu request got triggered: Constructing a menu reply...", LOG_AEREA_MAIN);
-      menu.setMessageId(message_id);
-      menu.setLabel(filename);
-      menu.setIcon("battery-level-0-charging-symbolic");
-      if (filename == "foo test") menu.setIcon("org.fedoraproject.AnacondaInstaller-symbolic");
-      menu.setTooltip("In here are all the dining options...");
-          Logger::debug("Generated menu YAML:", LOG_AEREA_MAIN);
-          Logger::debug(menu.getYAMLString(), LOG_AEREA_MAIN);
-          Logger::debug("Sending menu reply to client...", LOG_AEREA_MAIN);
-    if (!socket->sendString(menu.getYAMLString())) {
-      Logger::warn("Error could not send menu reply", LOG_AEREA_MAIN);
-      return;
-    }
-    Logger::debug("Successfully send menu reply", LOG_AEREA_MAIN);
-  } else if (type == REQUEST_PLAY) {
-    Logger::debug("Received play request", LOG_AEREA_MAIN);
-    state = STATE_PLAYING;
-    if (file_loaded != filename) file_loaded = filename;
-  } else if (type == REQUEST_PAUSE) {
-    Logger::debug("Received pause request", LOG_AEREA_MAIN);
-    state = STATE_PAUSED;
-  } else if (type == REQUEST_STOP) {
-    Logger::debug("Received stop request", LOG_AEREA_MAIN);
-    file_loaded = "";
-  } else {
-    Logger::urgent("Non-implemented action got triggered", LOG_AEREA_MAIN);
-  }
-}
-
 void test_widget_constructor();
 
-void dings(string messageId, string file, string path, string value, SocketHandler* socket) {
-  Logger::debug("received menu request: net-id=" + messageId + ", id=" + to_string(socket->getConnectionId()) + ", file=" + file + ", path=" + path + ", value=" + value, LOG_AEREA_MAIN);
-  menu.addIncomingValue(value, path);
+void testPlayHandler(string, string filename, SocketHandler*) {
+  comms.setSelectedFile(STATE_PLAYING, filename);
 }
 
+void testPauseHandler(string, string filename, SocketHandler*) {
+  comms.setSelectedFile(STATE_PAUSED, filename);
+}
+
+void testStopHandler(string, string filename, SocketHandler*) {
+  comms.setSelectedFile(STATE_NOT_LOADED, filename);
+}
 
 int test_some_stuff_smileyface() {//test_widget_constructor();
 
@@ -185,13 +131,19 @@ int test_some_stuff_smileyface() {//test_widget_constructor();
       group.addWidget(&dropdown, 2);
       group.addWidget(&slider, 3);
 
+      menu.setLabel("foo test");
+      menu.setIcon("org.fedoraproject.AnacondaInstaller-symbolic");
       menu.addGroup(&group, 0);
 
 
   if (!comms.begin(1200)) return -1;
-  comms.setStatusRequestHandler(statusHandler);
-  comms.setGeneralRequestHandler(generalRequestHandler);
-  comms.setMenuChangeHandler(dings);
+  comms.updateVoltage(5.1682);
+  comms.updateCurrentDraw(0.5849);
+  comms.setSelectedFile(STATE_PLAYING, "foo test");
+  comms.addAnimationEntry("foo test", "org.fedoraproject.AnacondaInstaller-symbolic", &menu);
+  comms.setPlayHandler(testPlayHandler);
+  comms.setPauseHandler(testPauseHandler);
+  comms.setStopHandler(testStopHandler);
   while(true) usleep(1000000);
   return 0;
 }
@@ -294,7 +246,7 @@ void test_widget_constructor() {
 
   menu.setTooltip("In here are all the dining options...");
   menu.addGroup(&group, 0);
-  Logger::urgent(menu.getYAMLString(), LOG_AEREA_MAIN);
-  Logger::urgent(to_string(menu.addIncomingValue("test", "group0widget0widget2")), LOG_AEREA_MAIN);
+  Logger::log(menu.getYAMLString("stupidity"), LOG_AEREA_MAIN, 500);
+  Logger::log(to_string(menu.addIncomingValue("test", "group0widget0widget2")), LOG_AEREA_MAIN, 500);
 }
 

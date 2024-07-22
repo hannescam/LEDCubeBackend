@@ -4,10 +4,6 @@ void menuConstructor::setTooltip(string _tooltip) {
   tooltip = _tooltip;
 }
 
-void menuConstructor::setMessageId(string _messageId) {
-  messageId = _messageId;
-}
-
 void menuConstructor::setLabel(string _label) {
   label = _label;
 }
@@ -62,7 +58,7 @@ bool menuConstructor::removeGroup(unsigned long position) {
   return false;
 }
 
-string menuConstructor::getYAMLString() {
+string menuConstructor::getYAMLString(string messageId) {
   menuYAML[PACKET_TYPE_NAME] = PACKET_REPLY_NAME;
   menuYAML[REPLY_TYPE_NAME] = REPLY_TYPE_MENU;
   menuYAML[TOOLTIP] = tooltip;

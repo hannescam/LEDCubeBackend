@@ -45,6 +45,7 @@ bool expanderWidget::addIncomingValue(string InputValue, string path) {
     }
     Logger::debug("Expander switch position updated: " + to_string(value), LOG_AEREA_WIDGETS);
     if (changeHandler) changeHandler(value);
+    return true;
   }
 
   unsigned long position;
