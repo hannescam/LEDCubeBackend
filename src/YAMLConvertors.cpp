@@ -31,37 +31,3 @@ string errorMsg::getYAMLString() {
 
   return YAML::Dump(errorMsgYAML); // Convert the YAML node to a string using the Dump function and return it as the output of the function
 }
-
-/*string replyStatusMsg::getYAMLString() {
-  YAML::Node replyStatusMsgYAML; // Initialize the YAML node
-  replyStatusMsgYAML[INTERNAL_NETWOTK_ID_NAME] = messageId; // Save the required constants/variables into the YAML node
-  replyStatusMsgYAML[PACKET_TYPE_NAME] = PACKET_REPLY_NAME;
-  replyStatusMsgYAML[REPLY_TYPE_NAME] = REPLY_TYPE_STATUS;
-  replyStatusMsgYAML[REPLY_STATUS_FILE_LOADED] = fileIsLoaded;
-
-  string fileStateStr;
-  switch (state) { // Switch to convert the fileState enum to a string file state
-    case STATE_PLAYING:
-      fileStateStr = REPLY_STATUS_FILE_STATE_PLAYING;
-      break;
-
-    case STATE_PAUSED:
-      fileStateStr = REPLY_STATUS_FILE_STATE_PAUSED;
-      break;
-  }
-
-  replyStatusMsgYAML[REPLY_STATUS_FILE_STATE] = fileStateStr; // Put the string error source into the YAML node
-  replyStatusMsgYAML[REPLY_STATUS_FILE_SELECTED] = fileSelected; // Save the required variables into the YAML node
-  replyStatusMsgYAML[REPLY_STATUS_CURRENT_DRAW] = currentDraw;
-  replyStatusMsgYAML[REPLY_STATUS_VOLTAGE] = voltage;
-  replyStatusMsgYAML[REPLY_STATUS_LID_STATE] = lidState;
-
-  unsigned int cnt = 0;
-  while (cnt < availableAnimations.size()) { // Loop through all the contents of the availableAnimations vector
-    animationWithIcon selectedAnimation = availableAnimations.at(cnt); // Extract the animation information
-    replyStatusMsgYAML[REPLY_STATUS_AVAILIBLE_ANIMATIONS][selectedAnimation.animationName] = selectedAnimation.animationGnomeIconName; // Insert all the information for the animation entry into a YAML sub-node
-    cnt++; // You know the deal with this thing
-  }
-
-  return YAML::Dump(replyStatusMsgYAML); // Convert the YAML node to a string using the Dump function and return it as the output of the function
-}*/
