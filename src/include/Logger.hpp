@@ -53,16 +53,16 @@ class LoggerSettings {
 
 class Logger {
   public:
-    bool begin(string configPath);
-    int getLogLevel();
-    void log(string message, string origin, int logSeverity, const source_location functionSource = source_location::current());
-    void debug(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
-    void info(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
-    void urgent(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
-    void warn(string message,  string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
-    void error(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
+    static bool begin(string configPath);
+    static int getLogLevel();
+    static void log(string message, string origin, int logSeverity, const source_location functionSource = source_location::current());
+    static void debug(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
+    static void info(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
+    static void urgent(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
+    static void warn(string message,  string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
+    static void error(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
   private:
-    void printColor(uint32_t color, string content);
-    LoggerSettings loggerSettings;
+    static void printColor(uint32_t color, string content);
+    static LoggerSettings loggerSettings;
 };
 #endif

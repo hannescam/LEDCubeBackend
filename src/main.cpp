@@ -228,20 +228,12 @@ void clientHandler(SocketHandler* socket) {
   while (socket->isOpen()) usleep(1000);
   cout << "shit" << endl;
 }
-Logger logger;
+
 int main() {
-  //return test_some_stuff_smileyface();
-
-  logger.begin("/home/hannes/LoggerConfig.yml");
-  int cnt = 0;
-  while (cnt < logger.getLogLevel() + 1) {
-    logger.log("Hellorld! cnt=" + to_string(cnt), "MAIN", cnt);
-    cnt++;
-  }
-
-  logger.info("test");
-  logger.debug("test", "SILENCE");
-  return 0;
+  Logger::begin("/home/hannes/LoggerConfig.yml");
+  return test_some_stuff_smileyface();
+  Logger::info("test");
+  Logger::debug("test", "SILENCE");
 }
 
 

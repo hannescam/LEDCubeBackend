@@ -1,5 +1,7 @@
 #include "include/Logger.hpp"
 
+LoggerSettings Logger::loggerSettings; // Initialize loggerSettings because it is needed
+
 bool Logger::begin(string configPath) {
   return loggerSettings.begin(configPath);
 }
