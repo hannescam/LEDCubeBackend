@@ -16,6 +16,8 @@ using std::experimental::source_location;
 
 #define LOGGER_NEWLINE_CHAR '\n'
 #define LOGGER_SYSTEM_FOLDER_DELIMETOR '/'
+#define LOGGER_MINIMUM_PADDING_AFTER_HEADER 2
+#define LOGGER_STRING_BEFORE_MESSAGE "| "
 
 #define LOGGER_ALLOW_ALL_LOG_AEREAS_AEREA "ALL"
 #define LOGGER_USE_LIGHT_MODE_COLORS_KEY_NAME "uselightmodecolors"
@@ -67,5 +69,6 @@ class Logger {
   private:
     static void printColor(uint32_t color, string content);
     static LoggerSettings loggerSettings;
+    static unsigned int currentMaxLength;
 };
 #endif

@@ -2,6 +2,8 @@
 
 LoggerSettings Logger::loggerSettings; // Initialize loggerSettings because it is needed
 
+unsigned int Logger::currentMaxLength = 0;
+
 bool Logger::begin(string configPath) {
   return loggerSettings.begin(configPath);
 }
@@ -61,9 +63,11 @@ void Logger::log(string message, string origin, int logSeverity, const source_lo
       messageHeader = "[" + logSeverityStr + "] ["+ origin +"] ";
     }
 
+    if (messageHeader.length() + LOGGER_MINIMUM_PADDING_AFTER_HEADER > currentMaxLength) currentMaxLength = messageHeader.length() + LOGGER_MINIMUM_PADDING_AFTER_HEADER; // Check if current header is longer than the previous longest
+
     stringstream messageStream(message);
-    while (getline(messageStream, message, LOGGER_NEWLINE_CHAR)) {
-      printColor(color, messageHeader + message);
+    while (getline(messageStream, message, LOGGER_NEWLINE_CHAR)) { // Get a line from the message so it prints the header with every line in the message
+      printColor(color, messageHeader + "\u001b[" + to_string(currentMaxLength - messageHeader.length()) + "C" + LOGGER_STRING_BEFORE_MESSAGE + message); // Print it in the corresponding color
     }
   }
 }
