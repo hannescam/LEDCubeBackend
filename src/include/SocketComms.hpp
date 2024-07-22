@@ -25,15 +25,6 @@ enum errorSource {
   SOURCE_OTHER
 };
 
-enum requestType {
-  REQUEST_STATUS,
-  REQUEST_PLAY,
-  REQUEST_PAUSE,
-  REQUEST_STOP,
-  REQUEST_MENU,
-  REQUEST_MENU_CHANGE
-};
-
 enum errorSeverity {
   SEVERITY_SIMPLE_SOFTWARE = 1,
   SEVERITY_MEDIUM_SOFTWARE = 2,
