@@ -40,17 +40,19 @@ bool expanderWidget::addIncomingValue(string InputValue, string path) {
     } else if (InputValue == "false") {
       value = false;
     } else {
-      cerr << "String doesn't contain 'true' or 'false' when trying to parse it as bool" << endl;
+      Logger::urgent("String doesn't contain 'true' or 'false' when trying to parse it as bool", LOG_AEREA_WIDGETS);
       return false;
     }
+    Logger::debug("Expander switch position updated: " + to_string(value), LOG_AEREA_WIDGETS);
     if (changeHandler) changeHandler(value);
   }
 
   unsigned long position;
-  string newPath;
+  string oldPath = path;
   bool success = path2Position(path, position);
 
   if (position < widgets.size() && success) {
+    Logger::debug("Got update request for child: value: " + InputValue + ", path: " + oldPath, LOG_AEREA_WIDGETS);
     return widgets.at(position)->addIncomingValue(InputValue, path);
   }
 

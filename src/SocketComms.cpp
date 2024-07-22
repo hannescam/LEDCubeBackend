@@ -1,9 +1,5 @@
 #include "include/SocketComms.hpp"
 
-/*void SocketComms::setErrorStream(ostream &_errorStream) {
-  errorStream = _errorStream;
-}*/
-
 void SocketComms::setStatusRequestHandler(function<void(string, SocketHandler*)> _statusRequestHandler) {
   statusRequestHandler = _statusRequestHandler;
 }
@@ -48,11 +44,13 @@ void SocketComms::handleIncommingYAML(string message, SocketHandler* socket) {
     } else if (requestTypeName == REQUEST_TYPE_MENU_CHANGE) {
       type = REQUEST_MENU_CHANGE;
     } else if (requestTypeName == REQUEST_TYPE_FILE_UPLOAD) {
-      fileIsUpcomming = true;
+      bytesInFileTransmission = messageYAML[REQUEST_FILE_BYTE_COUNT].as<unsigned int>();
+      fileNameInTransmision = messageYAML[REQUEST_FILE].as<string>();
       socket->setUseReveiveHandler(false);
+      fileIsUpcomming = true;
       return;
     } else {
-      cerr << "Request type is invalid, sending a error message..." << endl;
+      Logger::urgent("Request type is invalid, sending a error message...", LOG_AEREA_SOCKET_COMMS);
       socket->sendString(createInvalidRequestError(messageId).getYAMLString());
       return;
     }
@@ -70,7 +68,7 @@ void SocketComms::handleIncommingYAML(string message, SocketHandler* socket) {
         if (menuChangeHandler) menuChangeHandler(messageId, messageYAML[REQUEST_FILE].as<string>(), messageYAML[REQUEST_MENU_OBJECT_PATH].as<string>(), messageYAML[REQUEST_MENU_OBJECT_VALUE].as<string>(), socket);
     }
   } else {
-    cerr << "Packet type is invalid, sending a error message..." << endl;
+    Logger::urgent("Packet type is invalid, sending a error message...", LOG_AEREA_SOCKET_COMMS);
     socket->sendString(createInvalidRequestError(messageId).getYAMLString());
   }
 }
@@ -79,20 +77,29 @@ bool SocketComms::begin(int port) {
   bool success = acceptor.begin(port);
 
   acceptor.setClientHandler([this](SocketHandler* socket) {
-    cout << "New client connected with id: " << socket->getConnectionId() << endl;
-
+    Logger::info("New client connected with id: " + to_string(socket->getConnectionId()) , LOG_AEREA_SOCKET_COMMS);
     socket->setReceiveHandler([this](string message, SocketHandler* socket) {
-      cout << "-----------------------------------------------------------------" << endl << "Got message from client with id: " << socket->getConnectionId() << endl << message << "-----------------------------------------------------------------" << endl;
+      Logger::debug("-----------------------------------------------------------------", LOG_AEREA_SOCKET_COMMS);
+      Logger::debug("Got message from client with id: " + to_string(socket->getConnectionId()), LOG_AEREA_SOCKET_COMMS);
+      Logger::debug(message + "-----------------------------------------------------------------", LOG_AEREA_SOCKET_COMMS);
+
       try {
         this->handleIncommingYAML(message, socket);
       } catch (exception &error) {
-        cerr << "Stantard error while parsing incoming YAML: " << error.what() << endl;
+        Logger::warn("Standard error while parsing incoming YAML: " + string(error.what()), LOG_AEREA_SOCKET_COMMS);
       } catch (...) {
-        cerr << "Unknown error while parsing incoming YAML: " << __cxxabiv1::__cxa_current_exception_type()->name() << endl;
+        Logger::warn("Unknown error while parsing incoming YAML: " + string(__cxxabiv1::__cxa_current_exception_type()->name()), LOG_AEREA_SOCKET_COMMS);
       }
     });
 
-    while (socket->isOpen()) usleep(10000);
+    while (socket->isOpen()) {
+      if (this->fileIsUpcomming) {
+        socket->receiveFile(this->fileNameInTransmision, this->bytesInFileTransmission);
+        this->fileIsUpcomming = false;
+      }
+
+      usleep(1000);
+    }
   });
 
   acceptor.startListening();

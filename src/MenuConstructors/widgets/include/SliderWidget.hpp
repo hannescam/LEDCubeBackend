@@ -1,5 +1,5 @@
 #include <string>
-#include <iostream>
+#include <Logger.hpp>
 #include <yaml-cpp/node/emit.h>
 #include <yaml-cpp/yaml.h>
 #include <communicationDefinitions.hpp>

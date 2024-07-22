@@ -25,6 +25,7 @@ void buttonWidget::setClickHandler(function<void ()> _clickHandler) {
 }
 
 bool buttonWidget::addIncomingValue(string, string) {
+  Logger::debug("Button got triggered", LOG_AEREA_WIDGETS);
   if (clickHandler) clickHandler();
   return true;
 }

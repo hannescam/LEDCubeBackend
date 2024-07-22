@@ -12,9 +12,9 @@ void SocketAcceptor::listener() {
     cliLength = sizeof(cli);
     connfd = accept(sockfd, (struct sockaddr*)&cli, &cliLength);
     if (connfd < 0) {
-      cerr << "Failed to accept incoming connection request" << endl;
+      Logger::urgent("Failed to accept incoming connection request", LOG_AEREA_SOCKET_ACCEPTOR);
     } else {
-      cout << "Accepted incoming connection request" << endl;
+      Logger::debug("Accepted incoming connection request", LOG_AEREA_SOCKET_ACCEPTOR);
       usleep(5000);
 
       clientHandlers.resize(clientHandlers.size() + 1);
@@ -25,7 +25,6 @@ void SocketAcceptor::listener() {
       thread clientHandlerThread(&SocketAcceptor::startClientHandler, this, &clientHandlers.at(clientHandlers.size() - 1));
       //clientHandlerThread.detach();
       //while (clientHandlers.at(clientHandlers.size() - 1).isOpen()) usleep(50000); // Prevent multiple clients from joining at the same time
-      cout << "run" << endl;
       clientHandlerThreads.push_back(move(clientHandlerThread));
     }
     usleep(1000);
@@ -37,14 +36,15 @@ bool SocketAcceptor::begin(int port, int _packetSize) {
   packetSize = _packetSize;
   struct sockaddr_in servaddr;
 
-  cout << "Trying to create a C socket..." << endl;
+  Logger::debug("Trying to create a C socket...", LOG_AEREA_SOCKET_ACCEPTOR);
   sockfd = socket(AF_INET, SOCK_STREAM, 0); // Create a TCP/IP socket using the C socket api
   if (sockfd == -1) {
-    cerr << "Error creating socket" << endl;
+    Logger::error("Error creating socket", LOG_AEREA_SOCKET_ACCEPTOR);
+    exit(1);
     return false;
   }
 
-  cout << "Successfully created socket" << endl;
+  Logger::debug("Successfully created socket", LOG_AEREA_SOCKET_ACCEPTOR);
 
   bzero(&servaddr, sizeof(servaddr));
 
@@ -53,34 +53,36 @@ bool SocketAcceptor::begin(int port, int _packetSize) {
   servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
   servaddr.sin_port = htons(port);
 
-  cout << "Trying to bind the socket to address/port" << endl;
+  Logger::debug("Trying to bind the socket to address/port", LOG_AEREA_SOCKET_ACCEPTOR);
   // Binding newly created socket to given IP and verification
   if ((bind(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr))) != 0) {
-    cerr << "Error binding socket to address/port" << endl;
+    Logger::error("Error binding socket to address/port", LOG_AEREA_SOCKET_ACCEPTOR);
+    exit(1);
     return false;
   }
 
-  cout << "Successfully bound socket to address/port" << endl;
-  cout << "Trying to start listening on the socket" << endl;
+  Logger::debug("Successfully bound socket to address/port", LOG_AEREA_SOCKET_ACCEPTOR);
+  Logger::debug("Trying to start listening on the socket...", LOG_AEREA_SOCKET_ACCEPTOR);
   // Now server is ready to listen and verification
   if ((listen(sockfd, 5)) != 0) {
-    cerr << "Error while starting to listen on the socket" << endl;
+    Logger::error("Error while trying to listen on the socket", LOG_AEREA_SOCKET_ACCEPTOR);
+    exit(1);
     return false;
   }
 
-  cout << "Started listening on socket" << endl;
+  Logger::info("Started listening on socket", LOG_AEREA_SOCKET_ACCEPTOR);
 
   return true;
 }
 
 void SocketAcceptor::startListening() {
-  cout << "Starting listener thread..." << endl;
+  Logger::debug("Starting listener thread...", LOG_AEREA_SOCKET_ACCEPTOR);
 
   thread _listenerThread(&SocketAcceptor::listener, this);
   _listenerThread.detach();
   listnerThread = move(_listenerThread);
 
-  cout << "Successfully started listener thread" << endl;
+  Logger::info("Successfully started listener thread", LOG_AEREA_SOCKET_ACCEPTOR);
 }
 
 void SocketAcceptor::stopListening() {
@@ -88,7 +90,7 @@ void SocketAcceptor::stopListening() {
 }
 
 void SocketAcceptor::closeSocket() {
-  cout << "Closing socket..." << endl;
+  Logger::info("Closing socket...", LOG_AEREA_SOCKET_ACCEPTOR);
   close(sockfd);
 }
 

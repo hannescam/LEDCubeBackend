@@ -3,6 +3,7 @@
 #include <MenuConstructor.hpp>
 #include <GroupConstructor.hpp>
 #include <SocketComms.hpp>
+#include <Logger.hpp>
 propertyWidget property;
     buttonWidget button;
     switchWidget switch_wid;
@@ -21,7 +22,7 @@ float do_stuff_for_real_because_why_not_smileyface();
 string file_loaded = "df";
 
 void statusHandler(string message_id, SocketHandler* socket) {
-  cout << "Got status request with network id: '" << message_id << "', assembling a status reply..." << endl;
+  Logger::debug("Got status request with network id: '" + message_id + "', assembling a status reply...", LOG_AEREA_MAIN);
   replyStatusMsg status;
   status.messageId = message_id;
   status.fileIsLoaded = (file_loaded != "");
@@ -39,13 +40,13 @@ void statusHandler(string message_id, SocketHandler* socket) {
   anims.at(1).animationGnomeIconName = "battery-level-0-charging-symbolic";
 
   status.availableAnimations = anims;
-  cout << "Assembled status reply:" << endl << status.getYAMLString() << endl;
-  cout << "Sending status reply to client..." << endl;
+  Logger::debug("Assembled status reply:", LOG_AEREA_MAIN);
+  Logger::debug(status.getYAMLString(), LOG_AEREA_MAIN);
   if (!socket->sendString(status.getYAMLString())) {
-    cerr << "Error could not send status reply" << endl;
+    Logger::warn("Could not send status reply", LOG_AEREA_MAIN);
     return;
   }
-  cout << "Successfully send status reply" << endl;
+  Logger::debug("Successfully send status reply", LOG_AEREA_MAIN);
 }
 
 float val1 = 5.1;
@@ -79,46 +80,46 @@ float do_stuff_for_real_because_why_not_smileyface() {
 }
 
 void generalRequestHandler(string message_id, requestType type, string filename, SocketHandler* socket) {
-  cout << "Triggered general request handler with the message id: '" << message_id << endl;
+  Logger::debug("Triggered general request handler with the message id: '" + message_id, LOG_AEREA_MAIN);
   if (type == REQUEST_MENU) {
-    cout << "Menu request got triggered: Constructing a menu reply..." << endl;
+    Logger::debug("Menu request got triggered: Constructing a menu reply...", LOG_AEREA_MAIN);
       menu.setMessageId(message_id);
       menu.setLabel(filename);
       menu.setIcon("battery-level-0-charging-symbolic");
       if (filename == "foo test") menu.setIcon("org.fedoraproject.AnacondaInstaller-symbolic");
       menu.setTooltip("In here are all the dining options...");
-    cout << "Generated menu YAML: " << endl << menu.getYAMLString() << endl;
-    cout << "Sending menu reply to client..." << endl;
+          Logger::debug("Generated menu YAML:", LOG_AEREA_MAIN);
+          Logger::debug(menu.getYAMLString(), LOG_AEREA_MAIN);
+          Logger::debug("Sending menu reply to client...", LOG_AEREA_MAIN);
     if (!socket->sendString(menu.getYAMLString())) {
-      cerr << "Error could not send menu reply" << endl;
+      Logger::warn("Error could not send menu reply", LOG_AEREA_MAIN);
       return;
     }
-    cout << "Successfully send menu reply" << endl;
+    Logger::debug("Successfully send menu reply", LOG_AEREA_MAIN);
   } else if (type == REQUEST_PLAY) {
-    cout << "Received play request" << endl;
+    Logger::debug("Received play request", LOG_AEREA_MAIN);
     state = STATE_PLAYING;
     if (file_loaded != filename) file_loaded = filename;
   } else if (type == REQUEST_PAUSE) {
-    cout << "Received pause request" << endl;
+    Logger::debug("Received pause request", LOG_AEREA_MAIN);
     state = STATE_PAUSED;
   } else if (type == REQUEST_STOP) {
-    cout << "Received stop request" << endl;
+    Logger::debug("Received stop request", LOG_AEREA_MAIN);
     file_loaded = "";
   } else {
-    cerr << "Non-implemented action got triggered" << endl;
+    Logger::urgent("Non-implemented action got triggered", LOG_AEREA_MAIN);
   }
 }
 
 void test_widget_constructor();
 
 void dings(string messageId, string file, string path, string value, SocketHandler* socket) {
-  cout << "received menu request: net-id=" << messageId << ", id=" << socket->getConnectionId() << ", file=" << file << ", path=" << path << ", value=" << value << endl;
-  cout.flush();
+  Logger::debug("received menu request: net-id=" + messageId + ", id=" + to_string(socket->getConnectionId()) + ", file=" + file + ", path=" + path + ", value=" + value, LOG_AEREA_MAIN);
   menu.addIncomingValue(value, path);
 }
 
 
-int test_some_stuff_smileyface() {test_widget_constructor();
+int test_some_stuff_smileyface() {//test_widget_constructor();
 
 
 
@@ -151,9 +152,6 @@ int test_some_stuff_smileyface() {test_widget_constructor();
       expander.addWidget(&button, 1);
       expander.addWidget(&switch_wid, 2);
       expander.addWidget(&textbox, 3);
-      expander.setChangeHandler([](bool value) {
-        cout << "Expander switch set to new value: " << value << endl;
-      });
 
       spinner.setTimeout(60*1000);
       spinner.setTooltip("Look at it and get hipnotised...");
@@ -166,9 +164,6 @@ int test_some_stuff_smileyface() {test_widget_constructor();
       dropdown.addEntry("Grour", 0);
       dropdown.addEntry("Meow", 1);
       dropdown.addEntry("Aaaaaaaaaaaa...", 2);
-      dropdown.setChangeHandler([](int value) {
-        cout << "Dropdown value changed: " << value << endl;
-      });
 
       slider.setLabel("What is the difference between 2 and 2*2 ?????");
       slider.setTooltip("What is this Hashmap<Hashmap<Hashmap<UUID, String>, String>, String>?");
@@ -182,9 +177,6 @@ int test_some_stuff_smileyface() {test_widget_constructor();
       slider.setStep(0.1);
       slider.setClimbRate(4);
       slider.setMax(500.0);
-      slider.setChangeHandler([](double value){
-        cout << "Slider value changed: " << value << endl;
-      });
 
       group.setLabel("What are you?");
       group.setTooltip("That is a 'question'");
@@ -205,36 +197,9 @@ int test_some_stuff_smileyface() {test_widget_constructor();
 }
 
 
-
-
-
-
-SocketAcceptor acceptor;
-
-void recvHandler(string inputString, SocketHandler* socket) {
-  cout << "Received string from socket with id " << socket->getConnectionId() << ":" << endl << inputString << endl;
-}
-
-void disconnHandler(SocketHandler* socket) {
-  cout << "disconn handler triggered from id " << socket->getConnectionId() << endl;
-}
-
-void clientHandler(SocketHandler* socket) {
-  cout << "Started client handler with id " << socket->getConnectionId() << endl;
-  socket->setReceiveHandler(recvHandler);
-  socket->setDisconnectHandler(disconnHandler);
-  usleep(1000);
-  while (socket->isOpen()) usleep(1000);
-  cout << "shit" << endl;
-}
-
 int main() {
+  Logger::begin("LoggerConfig.yml");
   return test_some_stuff_smileyface();
-  /*if (!acceptor.begin(1200)) return 1;
-  acceptor.setClientHandler(clientHandler);
-  acceptor.startListening();
-  while (true) usleep(1000000000);
-  acceptor.closeSocket();*/
 }
 
 
@@ -329,7 +294,7 @@ void test_widget_constructor() {
 
   menu.setTooltip("In here are all the dining options...");
   menu.addGroup(&group, 0);
-  cout << menu.getYAMLString() << endl;
-  cout << menu.addIncomingValue("test", "group0widget0widget2");
+  Logger::urgent(menu.getYAMLString(), LOG_AEREA_MAIN);
+  Logger::urgent(to_string(menu.addIncomingValue("test", "group0widget0widget2")), LOG_AEREA_MAIN);
 }
 

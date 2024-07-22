@@ -31,9 +31,10 @@ int dropdownWidget::getValue() {
 bool dropdownWidget::addIncomingValue(string InputValue, string) {
   try {
     selected = stoi(InputValue);
+    Logger::debug("Dropdown selection updated: " + to_string(selected), LOG_AEREA_WIDGETS);
     if (changeHandler) changeHandler(selected);
   } catch (...) {
-    cerr << "Failed to convert the input string to an integer" << endl;
+    Logger::urgent("Failed to convert the input string to an integer", LOG_AEREA_WIDGETS);
     return false;
   }
   return true;

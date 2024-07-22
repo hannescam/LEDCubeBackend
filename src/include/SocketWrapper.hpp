@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <netdb.h>
+#include <Logger.hpp>
 #include <netinet/in.h>
 #include <functional>
 #include <stdlib.h>
 #include <string.h>
+#include <cxxabi.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fstream>
 #include <string>
 #include <iostream>
 #include <yaml-cpp/yaml.h>
@@ -24,13 +27,14 @@ class SocketHandler {
     unsigned long getConnectionId();
     bool sendString(string data);
     bool sendByteArray(const char* data, int size);
-    string receiveStringUntilMessageEnd();
-    char* receiveByteArry(int size);
+    char* receiveByteArry(int& size, bool nonblocking);
+    bool receiveFile(string filename, unsigned int fileSize);
     void setDisconnectHandler(function<void(SocketHandler*)> _disconnectHandler);
     void setReceiveHandler(function<void(string, SocketHandler*)> _receiveHandler);
     void setUseReveiveHandler(bool useHandler);
     void setPacketSize(int _packetSize);
     void setConnectionFileDescriptor(int _connfd);
+    void triggerKeepalive();
   private:
     int connfd;
     int packetSize;
@@ -41,6 +45,7 @@ class SocketHandler {
     thread stopHandlerThread;
     chrono::time_point<chrono::high_resolution_clock> lastKeepaliveRequest;
 
+    string receiveStringUntilMessageEnd();
     void stopHandler();
     string keepaliveHandler(string input);
     void listener();

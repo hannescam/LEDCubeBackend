@@ -59,9 +59,10 @@ double sliderWidget::getValue() {
 bool sliderWidget::addIncomingValue(string _value, string) {
  try {
     value = stod(_value);
+    Logger::debug("Slider value updated: " + to_string(value), LOG_AEREA_WIDGETS);
     if (changeHandler) changeHandler(value);
   } catch (...) {
-    cerr << "Failed to convert the input string to an integer" << endl;
+    Logger::urgent("Failed to convert the input string to an integer", LOG_AEREA_WIDGETS);
     return false;
   }
   return true;

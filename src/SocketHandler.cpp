@@ -35,20 +35,61 @@ unsigned long SocketHandler::getConnectionId() {
 
 // Function to receive a byte array (aka char*) with a given size
 
-char* SocketHandler::receiveByteArry(int size) {
-  char* buffer = new char[size]; // Create a new buffer with the given size
-  bzero(buffer, size); // Overwrite the content of that array with zeros
-  read(connfd, buffer, size); // Read the given amount of data from the socket into the buffer
+char* SocketHandler::receiveByteArry(int& size, bool nonblocking) {
+  unsigned int sizeUneditable = size;
+  char* buffer = new char[sizeUneditable]; // Create a new buffer with the given size
+  bzero(buffer, sizeUneditable); // Overwrite the content of that array with zeros
+  int sizeReturn;
+  if (nonblocking) { // Check if the read should be non-blocking
+    sizeReturn = recv(connfd, buffer, sizeUneditable, MSG_DONTWAIT | MSG_WAITALL); // Make a non blocking read
+  } else {
+    sizeReturn = recv(connfd, buffer, sizeUneditable, MSG_WAITALL); // Make a blocking read
+  }
+  size = sizeReturn;
   return buffer; // NO I WON'T DOCUMENT THIS
 }
 
-// Function to receive a entire message/the entire buffer (blocking)
+bool SocketHandler::receiveFile(string filename, unsigned int fileSize) {
+  try {
+    ofstream outputFile;
+    outputFile.open(filename);
+    int actualSize;
+    int cnt;
+    char* buffer = new char[packetSize];
+    unsigned int bytesReceived = 0;
+    Logger::info("Receiving file: " + filename, LOG_AEREA_SOCKET_HANDLER);
+    while (fileSize > bytesReceived) {
+      bzero(buffer, packetSize); // Overwrite the content of that array with zeros
+      actualSize = recv(connfd, buffer, packetSize, MSG_WAITALL);
+      if (actualSize > 0) {
+        triggerKeepalive();
+        bytesReceived += actualSize;
+        cnt = 0;
+        while (cnt < actualSize) {
+          outputFile << buffer[cnt];
+          cnt++;
+        }
+      }
+    }
+    outputFile.flush();
+    outputFile.close();
+    return true;
+  } catch (exception &error) {
+    Logger::warn("Standard error while trying to receive file: " + string(error.what()), LOG_AEREA_SOCKET_HANDLER);
+    return false;
+  } catch (...) {
+    Logger::warn("Unknown error while trying to receive file: " + string(__cxxabiv1::__cxa_current_exception_type()->name()), LOG_AEREA_SOCKET_HANDLER);
+    return false;
+  }
+}
+
+// INTERNAL: function to receive a entire message/the entire buffer (blocking)
 
 string SocketHandler::receiveStringUntilMessageEnd() {
   string finalBuffer;
   string bufferStr;
   char* buffer = new char[packetSize]; // Not important to document
-  while (isConnOpen) { // Only loop when the socket is open
+  while (isConnOpen && useHandler) { // Only loop when the socket is open and the handler is used
     bzero(buffer, packetSize); // Clear the buffer
     int readBytes = recv(connfd, buffer, packetSize, MSG_DONTWAIT | MSG_WAITALL); // Read from the socket and not be blocking (so it doesn't try to fill the buffer when reading from the socket)
     if (((readBytes == 0) | (readBytes == -1)) && finalBuffer.size() > 0) break; // Check if there is something in the read buffer (and there wasn't a receive error) and there is something to return
@@ -93,6 +134,12 @@ void SocketHandler::startListner() {
   connectionId = time(0); // Get the system time as an id for the connection/client
 }
 
+// Reset the keep-alive timer
+
+void SocketHandler::triggerKeepalive() {
+  lastKeepaliveRequest = chrono::high_resolution_clock::now(); // Reset timer
+}
+
 // INTERNAL: function for distinguishing keep-alive requests and normal messages
 
 string SocketHandler::keepaliveHandler(string input) {
@@ -133,7 +180,7 @@ void SocketHandler::stopHandler() {
     unsigned long timeElapsedSinceConnectionStart = (chrono::duration_cast<chrono::milliseconds>(currentTime - intialConnectionTime)).count(); // Calculate how much time has elapsed since the grace period has started (grace period starts when initializing the stopHandler() thread)
 
     if (timeElapsedSinceLastKeepalive > KEEPALIVE_TIMEOUT && timeElapsedSinceConnectionStart > KEEPALIVE_GRACE_TIME_AFTER_START && isConnOpen) { // Checks if it should terminate the connection because the timeout is over
-      cout << "Client went unresponsive, assuming client disconnected" << endl; // DEBUG
+      Logger::urgent("Client went unresponsive, assuming client disconnected", LOG_AEREA_SOCKET_HANDLER);
       isConnOpen = false; // Report to all threads that the client disconnected
       if (listenerThread.joinable()) listenerThread.join(); // Join the listener to wait until it has closed
       close(connfd); // Close the sockets

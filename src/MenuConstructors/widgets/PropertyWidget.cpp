@@ -17,7 +17,7 @@ void propertyWidget::setText(string _text) {
 }
 
 bool propertyWidget::addIncomingValue(string, string) {
-  cerr << "Tried to add a value to a property widget (non-editable textbox)" << endl;
+  Logger::urgent("Tried to add a value to a property widget (non-editable textbox)", LOG_AEREA_WIDGETS);
   return false;
 }
 

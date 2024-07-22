@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include <iostream>
+#include <Logger.hpp>
 #include <yaml-cpp/node/emit.h>
 #include <yaml-cpp/yaml.h>
 #include <functional>

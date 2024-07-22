@@ -35,8 +35,11 @@ string textboxWidget::getValue() {
 bool textboxWidget::addIncomingValue(string value, string) {
   if (isEditable) {
     text = value;
+    Logger::debug("Textbox text was changed to: " + text, LOG_AEREA_WIDGETS);
+    if (changeHandler) changeHandler(text);
     return true;
   }
+  Logger::urgent("Non-editable textbox got a change request (got ignored)", LOG_AEREA_WIDGETS);
   return false;
 }
 

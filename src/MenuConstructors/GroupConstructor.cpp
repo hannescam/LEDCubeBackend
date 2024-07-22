@@ -19,13 +19,14 @@ bool groupConstructor::path2Position(string& path, unsigned long& position) {
 
 bool groupConstructor::addIncomingValue(string value, string path) {
   unsigned long position;
-  string newPath;
+  string oldPath = path;
   bool success = path2Position(path, position);
 
   if (position < widgets.size() && success) {
+    Logger::debug("Got value and path for a widget: value: " + value + ", path: " + oldPath, LOG_AEREA_WIDGET_MENU_CONSTRUCTOR);
     return widgets.at(position)->addIncomingValue(value, path);
   }
-
+  Logger::urgent("Invalid path given: " + oldPath, LOG_AEREA_WIDGET_MENU_CONSTRUCTOR);
   return false;
 }
 

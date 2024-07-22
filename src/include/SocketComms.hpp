@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <Logger.hpp>
 #include <thread>
 #include <cxxabi.h>
 #include <stdint.h>
@@ -77,7 +78,6 @@ class replyStatusMsg {
 
 class SocketComms {
   public:
-    //void setErrorStream(ostream &_errorStream);
     bool begin(int port = 1200);
     void setStatusRequestHandler(function<void(string, SocketHandler*)> _statusHandler);
     void setGeneralRequestHandler(function<void(string, requestType, string, SocketHandler*)> _generalRequestHandler);
@@ -88,6 +88,8 @@ class SocketComms {
     thread listener;
     SocketAcceptor acceptor;
     bool fileIsUpcomming = false;
+    unsigned int bytesInFileTransmission;
+    string fileNameInTransmision;
 
     function<void(string, SocketHandler*)> statusRequestHandler;
     function<void(string, requestType, string, SocketHandler*)> generalRequestHandler;

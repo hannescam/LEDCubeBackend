@@ -9,7 +9,7 @@ void spinnerWidget::setTooltip(string _tooltip) {
 }
 
 bool spinnerWidget::addIncomingValue(string, string) {
-  cerr << "Tried to add a value to a spinner widget" << endl;
+  Logger::urgent("Tried to add a value to a spinner widget", LOG_AEREA_WIDGETS);
   return false;
 }
 
