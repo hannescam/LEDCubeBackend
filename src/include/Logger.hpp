@@ -1,3 +1,4 @@
+// TODO: Document header and source
 #ifndef LOGGER_INCLUDED
 #define LOGGER_INCLUDED
 

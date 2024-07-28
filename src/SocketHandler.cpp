@@ -1,4 +1,3 @@
-// TODO: Comment the code
 #include "include/SocketWrapper.hpp"
 
 // Some setters

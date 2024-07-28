@@ -1,7 +1,18 @@
-Renderer
+Now:
 Settings Load/save
-Settings screen
-Local widgets (except simple "sliders")
-Interactive animation API and loader
-Output driver
+Receive settings from the frontend
+
+Side-projects/libraries:
 LumaMenuC++ rewrite
+Local widgets (except simple "sliders")
+
+After side-projects:
+Settings screen
+Local control
+
+After hardware ready:
+Output driver
+Interactive animation API
+Interactive animation loader
+MP4/JPEG Player
+Optional: USB Animation loading
