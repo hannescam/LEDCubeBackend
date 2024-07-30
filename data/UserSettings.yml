@@ -1,0 +1,7 @@
+max_brightness: 20
+restore_previous_state: true
+previous_animation: ""
+previous_file_state: not_loaded
+use_internal_screen: true
+use_remote_management: true
+send_errors_to_client: true

@@ -1,3 +1,4 @@
+#pragma once
 #include <stdlib.h>
 #include <Logger.hpp>
 #include <thread>

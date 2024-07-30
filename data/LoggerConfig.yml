@@ -1,0 +1,5 @@
+log_level: 4
+use_line_numbers: true
+use_light_mode_colors: false
+log_aereas:
+  - ALL

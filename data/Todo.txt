@@ -4,7 +4,6 @@ Receive settings from the frontend
 
 Side-projects/libraries:
 LumaMenuC++ rewrite
-Publish LumaMenuC++ on GitHub/GitLab
 Local widgets (except simple "sliders")
 
 After side-projects:
@@ -16,7 +15,4 @@ Output driver
 Interactive animation API
 Interactive animation loader
 MP4/JPEG Player
-
-Optional:
-USB Animation loading
-Move from GitHub to GitLab
+Optional: USB Animation loading

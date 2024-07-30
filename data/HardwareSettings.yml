@@ -1,0 +1,33 @@
+use_local_ui: true
+screen_config_file: LumaSettings.cfg
+
+encoder_pins:
+	button: 10
+	data: 11
+	clock: 12
+
+use_current_sensor: true
+current_sensor: ACS37800KMACTR-090B3-I2C
+maximum_voltage: 5.6
+maximum_current: 40.0
+relay_pin: 13
+
+animation_folder: /home/hannes/test_uploads
+renderer_shared_lib: renderer.so
+
+matrix_definitions:
+	is_cube: true
+	width: 10
+	height: 10
+	depth: 10
+	driver: ws281x
+	two_planes_per_interface: true
+	interfaces:
+		- /dev/spidev0.0
+		- /dev/spidev1.0
+		- /dev/spidev2.0
+		- /dev/spidev3.0
+		- /dev/spidev4.0
+
+allow_usb_animation_loading: true
+allow_network_animation_loading: true
