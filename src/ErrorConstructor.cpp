@@ -1,6 +1,22 @@
-#include "include/SocketComms.hpp"
+#include "include/ErrorConstructor.hpp"
 
-string errorMsg::getYAMLString() {
+void ErrorConstructor::setErrorCode(int _code) {
+  code = _code;
+}
+
+void ErrorConstructor::setErrorName(string _name) {
+  name = _name;
+}
+
+void ErrorConstructor::setErrorSource(errorSource _source) {
+  source = _source;
+}
+
+void ErrorConstructor::setErrorSeverity(errorSeverity _severity) {
+  severity = _severity;
+}
+
+string ErrorConstructor::getYAMLString(string messageId) {
   YAML::Node errorMsgYAML; // Initialize the YAML node
   errorMsgYAML[INTERNAL_NETWOTK_ID_NAME] = messageId; // Save the required constants/variables into the YAML node
   errorMsgYAML[PACKET_TYPE_NAME] = PACKET_ERROR_NAME;

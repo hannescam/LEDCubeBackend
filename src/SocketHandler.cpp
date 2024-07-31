@@ -1,4 +1,3 @@
-// TODO: Comment the code
 #include "include/SocketWrapper.hpp"
 
 // Some setters
@@ -50,34 +49,34 @@ char* SocketHandler::receiveByteArry(int& size, bool nonblocking) {
 }
 
 bool SocketHandler::receiveFile(string filename, unsigned int fileSize) {
-  try {
+  try { // Try-Catch setup in case the file isn't in a writable file system
     ofstream outputFile;
-    outputFile.open(filename);
+    outputFile.open(filename); // Try to open the specified file for writing to it
     int actualSize;
     int cnt;
-    char* buffer = new char[packetSize];
+    char* buffer = new char[packetSize]; // Create a new buffer with the specified packet size
     unsigned int bytesReceived = 0;
     Logger::info("Receiving file: " + filename, LOG_AEREA_SOCKET_HANDLER);
-    while (fileSize > bytesReceived) {
+    while (fileSize > bytesReceived) { // Read until the given bytecount is reached
       bzero(buffer, packetSize); // Overwrite the content of that array with zeros
-      actualSize = recv(connfd, buffer, packetSize, MSG_WAITALL);
-      if (actualSize > 0) {
-        triggerKeepalive();
+      actualSize = recv(connfd, buffer, packetSize, MSG_WAITALL); // Read in from the socket using a blocking read operation
+      if (actualSize > 0) { // Check if something actually got received
+        triggerKeepalive(); // Reset the keep-alive timer because no keep-alive requests are send during a file transfer
         bytesReceived += actualSize;
         cnt = 0;
-        while (cnt < actualSize) {
+        while (cnt < actualSize) { // Write out the buffer byte-by-byte to the disk
           outputFile << buffer[cnt];
           cnt++;
         }
       }
     }
-    outputFile.flush();
-    outputFile.close();
+    outputFile.flush(); // Blocking flush to make sure evereything got written to disk
+    outputFile.close(); // Cleanup
     return true;
-  } catch (exception &error) {
+  } catch (exception &error) { // Error handling
     Logger::warn("Standard error while trying to receive file: " + string(error.what()), LOG_AEREA_SOCKET_HANDLER);
     return false;
-  } catch (...) {
+  } catch (...) { // More error handling
     Logger::warn("Unknown error while trying to receive file: " + string(__cxxabiv1::__cxa_current_exception_type()->name()), LOG_AEREA_SOCKET_HANDLER);
     return false;
   }

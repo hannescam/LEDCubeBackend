@@ -1,5 +1,5 @@
-#ifndef LOGGER_INCLUDED
-#define LOGGER_INCLUDED
+// TODO: Document header and source
+#pragma once
 
 #include "LogAereas.hpp"
 #include <iostream>
@@ -20,10 +20,10 @@ using std::experimental::source_location;
 #define LOGGER_STRING_BEFORE_MESSAGE "| "
 
 #define LOGGER_ALLOW_ALL_LOG_AEREAS_AEREA "ALL"
-#define LOGGER_USE_LIGHT_MODE_COLORS_KEY_NAME "uselightmodecolors"
-#define LOGGER_LOG_LEVEL_KEY_NAME "loglevel"
-#define LOGGER_USE_LINE_NUMBERS_KEY_NAME "uselinenumbers"
-#define LOGGER_LOG_AEREAS_KEY_NAME "logaereas"
+#define LOGGER_USE_LIGHT_MODE_COLORS_KEY_NAME "use_light_mode_colors"
+#define LOGGER_LOG_LEVEL_KEY_NAME "log_level"
+#define LOGGER_USE_LINE_NUMBERS_KEY_NAME "use_line_numbers"
+#define LOGGER_LOG_AEREAS_KEY_NAME "log_aereas"
 
 #define LOG_LEVEL_ERROR 0
 #define LOG_LEVEL_WARNING 1
@@ -71,4 +71,3 @@ class Logger {
     static LoggerSettings loggerSettings;
     static unsigned int currentMaxLength;
 };
-#endif

@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <vector>
 #include <Logger.hpp>
@@ -8,9 +9,6 @@
 #include <WidgetTemplate.hpp>
 
 using namespace std;
-
-#ifndef GROUP_CONSTRUCTOR
-#define GROUP_CONSTRUCTOR
 
 class groupConstructor {
   public:
@@ -29,5 +27,3 @@ class groupConstructor {
     vector<int> usedPositions;
     vector<WidgetTemplate*> widgets;
 };
-
-#endif

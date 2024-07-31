@@ -1,3 +1,4 @@
+#pragma once
 #include <stdlib.h>
 #include <Logger.hpp>
 #include <thread>
@@ -10,6 +11,7 @@
 #include <functional>
 #include <iostream>
 #include <exception>
+#include <ErrorConstructor.hpp>
 #include <yaml-cpp/node/emit.h>
 #include <yaml-cpp/yaml.h>
 #include <SocketWrapper.hpp>
@@ -18,34 +20,10 @@
 
 using namespace std;
 
-enum errorSource {
-  SOURCE_POWER,
-  SOURCE_INVALID_FILE ,
-  SOURCE_INVALID_REQUEST,
-  SOURCE_OTHER
-};
-
-enum errorSeverity {
-  SEVERITY_SIMPLE_SOFTWARE = 1,
-  SEVERITY_MEDIUM_SOFTWARE = 2,
-  SEVERITY_SIMPLE_HARDWARE = 3,
-  SEVERITY_SEVERE_HARDWARE = 4
-};
-
 enum fileState {
   STATE_PLAYING,
   STATE_PAUSED,
   STATE_NOT_LOADED
-};
-
-class errorMsg {
-  public:
-    string messageId;
-    errorSource source;
-    int code = 0;
-    string name;
-    errorSeverity severity;
-    string getYAMLString();
 };
 
 class animation {
@@ -62,6 +40,7 @@ class SocketComms {
     void setLidState(bool _lidState);
     void updateVoltage(double _cubeVoltage);
     void updateCurrentDraw(double _cubeCurrent);
+    bool sendError(ErrorConstructor error, string messageId = "");
 
     void setNewFileHandler(function<void(string, string, SocketHandler*)> _newFileHandler);
     void setPlayHandler(function<void(string, string, SocketHandler*)> _playHandler);
@@ -80,6 +59,7 @@ class SocketComms {
     function<void(string, string, SocketHandler*)> pauseHandler;
     function<void(string, string, SocketHandler*)> stopHandler;
 
+    SocketHandler* connectedClient;
     map<string, animation> animations;
     bool lidState = true;
     bool fileIsLoaded = false;
@@ -87,6 +67,6 @@ class SocketComms {
     double cubeVoltage = 0;
     double cubeCurrent = 0;
     string selectedFile;
-    errorMsg createInvalidRequestError(string messageId);
+    string createInvalidRequestError(string messageId);
     void handleIncommingYAML(string message, SocketHandler* socket); // So that this function can be passed into set_message_handler
 };

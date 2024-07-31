@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <vector>
 #include <Logger.hpp>
@@ -11,9 +12,6 @@
 #define TOOLTIP "tooltip"
 
 using namespace std;
-
-#ifndef MENU_CONSTRUCTOR
-#define MENU_CONSTRUCTOR
 
 class menuConstructor {
   public:
@@ -33,4 +31,3 @@ class menuConstructor {
     string icon;
     vector<groupConstructor*> groupConstructors;
 };
-#endif
