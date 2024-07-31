@@ -92,5 +92,5 @@
 #define REPLY_MENU_GENERAL_CONTENT_SECTION_KEY_NAME "content"
 #define REPLY_MENU_GENERAL_LABEL "label"
 #define REPLY_MENU_GENERAL_TOOLTIP "tooltip"
-
-
+// Other stuff
+#define ERROR_MESSAGE_DEFAULT_NAME "Unknown error"

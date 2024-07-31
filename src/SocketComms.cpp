@@ -57,13 +57,26 @@ void SocketComms::setStopHandler(function<void (string, string, SocketHandler *)
   stopHandler = _stopHandler;
 }
 
-errorMsg SocketComms::createInvalidRequestError(string messageId) {
-  errorMsg error;
-  error.messageId = messageId;
-  error.source = SOURCE_INVALID_REQUEST;
-  error.name = "Received an invalid request that could not be parsed";
-  error.severity = SEVERITY_SIMPLE_SOFTWARE;
-  return error;
+bool SocketComms::sendError(ErrorConstructor error, string messageId) {
+  Logger::debug("Trying to send error message to client...", LOG_AEREA_SOCKET_COMMS);
+  if (connectedClient->isOpen()) {
+    if (!connectedClient->sendString(error.getYAMLString(messageId))) {
+      Logger::urgent("Unable to send error message to client", LOG_AEREA_SOCKET_COMMS);
+      return false;
+    }
+  } else {
+    Logger::urgent("Tried to send a error message to a disconnected or non-existent client", LOG_AEREA_SOCKET_COMMS);
+    return false;
+  }
+  return true;
+}
+
+string SocketComms::createInvalidRequestError(string messageId) {
+  ErrorConstructor error;
+  error.setErrorSource(ErrorConstructor::SOURCE_INVALID_REQUEST);
+  error.setErrorName("Received an invalid request that could not be parsed");
+  error.setErrorSeverity(ErrorConstructor::SEVERITY_SIMPLE_SOFTWARE);
+  return error.getYAMLString(messageId);
 }
 
 void SocketComms::handleIncommingYAML(string message, SocketHandler* socket) { // TODO: Add remote errors, Document
@@ -140,13 +153,13 @@ void SocketComms::handleIncommingYAML(string message, SocketHandler* socket) { /
       return;
     } else {
       Logger::urgent("Request type is invalid, sending a error message...", LOG_AEREA_SOCKET_COMMS);
-      socket->sendString(createInvalidRequestError(messageId).getYAMLString());
+      socket->sendString(createInvalidRequestError(messageId));
       return;
     }
 
   } else {
     Logger::urgent("Packet type is invalid, sending a error message...", LOG_AEREA_SOCKET_COMMS);
-    socket->sendString(createInvalidRequestError(messageId).getYAMLString());
+    socket->sendString(createInvalidRequestError(messageId));
   }
 }
 
@@ -155,6 +168,7 @@ bool SocketComms::begin(int port) {
 
   acceptor.setClientHandler([this](SocketHandler* socket) {
     Logger::info("New client connected with id: " + to_string(socket->getConnectionId()) , LOG_AEREA_SOCKET_COMMS);
+    connectedClient = socket;
     socket->setReceiveHandler([this](string message, SocketHandler* socket) {
       Logger::debug("-----------------------------------------------------------------", LOG_AEREA_SOCKET_COMMS);
       Logger::debug("Got message from client with id: " + to_string(socket->getConnectionId()), LOG_AEREA_SOCKET_COMMS);
