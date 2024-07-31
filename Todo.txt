@@ -1,6 +1,7 @@
 Now:
 Settings Load/save (multiple files)
-Receive settings from the frontend
+Receive settings from the front-end
+Rename LEDCubeBackend to something that doesn't limit it to cubes - Maybe: LEDSuiteBackend
 
 Side-projects/libraries:
 LumaMenuC++ rewrite
