@@ -6,6 +6,8 @@ ledcubebackend_sources = [
   'Logger.cpp',
   'LoggerSettings.cpp',
   'ErrorConstructor.cpp',
+  'UserSettings.cpp',
+  'HardwareConfig.cpp'
 ]
 
 ledcubebackend_deps = [
