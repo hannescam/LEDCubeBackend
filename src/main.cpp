@@ -1,4 +1,5 @@
 #include <iostream>
+#include <UserSettings.hpp>
 #include <Widgets.hpp>
 #include <MenuConstructor.hpp>
 #include <GroupConstructor.hpp>
@@ -148,10 +149,12 @@ int test_some_stuff_smileyface() {//test_widget_constructor();
   return 0;
 }
 
-
 int main() {
   Logger::begin("LoggerConfig.yml");
-  return test_some_stuff_smileyface();
+  UserSettings::begin("/home/hannes/Projekte/LED Cube/Software/Cube code/LEDCubeBackend/data/UserSettings.yml");
+  UserSettings::setPrevFileState(STATE_NOT_LOADED);
+  UserSettings::save();
+  //return test_some_stuff_smileyface();
 }
 
 
