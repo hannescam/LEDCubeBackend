@@ -1,5 +1,10 @@
 #include "include/Logger.hpp"
 
+int LoggerSettings::logLevel;
+bool LoggerSettings::useLineNumbers;
+vector<string> LoggerSettings::enabledOrigins;
+bool LoggerSettings::useLightmodeColors;
+
 bool LoggerSettings::begin(string configPath) {
   try {
     YAML::Node loggerSettingsYAML = YAML::LoadFile(configPath);

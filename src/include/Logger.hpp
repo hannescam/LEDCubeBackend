@@ -43,17 +43,17 @@ using std::experimental::source_location;
 
 class LoggerSettings {
   public:
-    bool begin(string configPath);
-    int getLogLevel();
-    bool getUseLineNumbers();
-    bool getAllAereasAreEnabled();
-    bool getUseLightmodeColors();
-    bool checkIfOriginIsEnabled(string origin);
+    static bool begin(string configPath);
+    static int getLogLevel();
+    static bool getUseLineNumbers();
+    static bool getAllAereasAreEnabled();
+    static bool getUseLightmodeColors();
+    static bool checkIfOriginIsEnabled(string origin);
   private:
-    vector<string> enabledOrigins;
-    bool useLightmodeColors;
-    bool useLineNumbers;
-    int logLevel;
+    static vector<string> enabledOrigins;
+    static bool useLightmodeColors;
+    static bool useLineNumbers;
+    static int logLevel;
 };
 
 class Logger {
@@ -68,6 +68,5 @@ class Logger {
     static void error(string message, string origin = LOG_ORIGIN_UNDEFINED, const source_location functionSource = source_location::current());
   private:
     static void printColor(uint32_t color, string content);
-    static LoggerSettings loggerSettings;
     static unsigned int currentMaxLength;
 };

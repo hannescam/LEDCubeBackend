@@ -1,19 +1,17 @@
 #include "include/Logger.hpp"
 
-LoggerSettings Logger::loggerSettings; // Initialize loggerSettings because it is needed
-
 unsigned int Logger::currentMaxLength = 0;
 
 bool Logger::begin(string configPath) {
-  return loggerSettings.begin(configPath);
+  return LoggerSettings::begin(configPath);
 }
 
 int Logger::getLogLevel() {
-  return loggerSettings.getLogLevel();
+  return LoggerSettings::getLogLevel();
 }
 
 void Logger::log(string message, string origin, int logSeverity, const source_location functionSource) {
-  if (loggerSettings.getLogLevel() > 0 && logSeverity <= loggerSettings.getLogLevel() && (loggerSettings.getAllAereasAreEnabled() or loggerSettings.checkIfOriginIsEnabled(origin))) {
+  if (LoggerSettings::getLogLevel() > 0 && logSeverity <= LoggerSettings::getLogLevel() && (LoggerSettings::getAllAereasAreEnabled() or LoggerSettings::checkIfOriginIsEnabled(origin))) {
     string logSeverityStr;
     uint32_t color;
 
@@ -35,7 +33,7 @@ void Logger::log(string message, string origin, int logSeverity, const source_lo
 
       case LOG_LEVEL_INFO:
         logSeverityStr = "INFO";
-        if (loggerSettings.getUseLightmodeColors()) {
+        if (LoggerSettings::getUseLightmodeColors()) {
           color = LOG_INFO_LIGHTMODE_COLOR;
         } else {
           color = LOG_INFO_DARKMODE_COLOR;
@@ -54,7 +52,7 @@ void Logger::log(string message, string origin, int logSeverity, const source_lo
 
     string messageHeader;
 
-    if (loggerSettings.getUseLineNumbers()) {
+    if (LoggerSettings::getUseLineNumbers()) {
       string fileName = functionSource.file_name(); // Get the path + filename of the function that called the logger
       stringstream fileNameStream(fileName); // Convert string to string stream
       while (getline(fileNameStream, fileName, LOGGER_SYSTEM_FOLDER_DELIMETOR)); // Remove path to file
