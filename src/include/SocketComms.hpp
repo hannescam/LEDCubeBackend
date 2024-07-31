@@ -16,15 +16,10 @@
 #include <yaml-cpp/yaml.h>
 #include <SocketWrapper.hpp>
 #include <MenuConstructor.hpp>
+#include <GlobalEnums.hpp>
 #include "communicationDefinitions.hpp"
 
 using namespace std;
-
-enum fileState {
-  STATE_PLAYING,
-  STATE_PAUSED,
-  STATE_NOT_LOADED
-};
 
 class animation {
   public:
